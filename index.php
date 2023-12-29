@@ -29,22 +29,22 @@ class Book
         $this->available = $available;
     }
 
-    public function getTitle() : string
+    public function getTitle(): string
     {
         return $this->title;
     }
 
-    public function getDescription() : string
+    public function getDescription(): string
     {
         return $this->description;
     }
 
-    public function getAvailable() : bool
+    public function getAvailable(): bool
     {
         return $this->available;
     }
 
-    public function getDetails() : string
+    public function getDetails(): string
     {
         return "$this->title $this->description $this->available";
     }
@@ -66,11 +66,12 @@ class Book
 
 // var_dump($array);
 
-class BookManagement {
+class BookManagement
+{
     protected $bookList = [];
 
     // Add a book
-    public function addBook(string $title, string $description, bool $available) : void
+    public function addBook(string $title, string $description, bool $available): void
     {
         $newBook = new Book($title, $description, $available);
         array_push($this->bookList, $newBook);
@@ -86,7 +87,7 @@ class BookManagement {
     public function displayList($bookList)
     {
         foreach ($bookList as $book) {
-            echo($book->getDetails()."\n");
+            echo ($book->getDetails() . "\n");
         }
     }
 
@@ -99,8 +100,8 @@ class BookManagement {
     //  Allows you to retrieve a book based on the value of one of these attributes
     public function getBookBy($column, $value)
     {
-        $functionName = 'get'.ucfirst($column);
-        for ($i=0; $i < count($this->bookList) ; ++$i) {
+        $functionName = 'get' . ucfirst($column);
+        for ($i = 0; $i < count($this->bookList); ++$i) {
             if ($this->bookList[$i]->$functionName() === $value) {
                 return $this->bookList[$i]->getDetails();
             }
@@ -111,7 +112,7 @@ class BookManagement {
     public function sortBookByAttributeAndOrderType($attribute, $orderType)
     {
         //  merge function
-        
+
         //  $leftArray: First array of objects to merge.
         //  $rightArray: Second array of objects to merge.
         //  $orderType: Type of sorting ('ascending' for ascending order, anything else for descending order).
@@ -122,103 +123,70 @@ class BookManagement {
             $leftArraySize = count($leftArray);
             $rightArraySize = count($rightArray);
             $sortedArray = array();
-            $i_left = 0; $i_right = 0;
+            $i_left = 0;
+            $i_right = 0;
 
             //  Retrieve the attribute and add the 'get' prefix to it in order to be able to retrieve the value of a given attribute of the object
-            $getterFunctionName = 'get'.$attribute;
+            $getterFunctionName = 'get' . $attribute;
 
-            for ($i = 0; $i_left < $leftArraySize && $i_right < $rightArraySize; ++$i)
-            {
+            for ($i = 0; $i_left < $leftArraySize && $i_right < $rightArraySize; ++$i) {
                 //  If the value to compare is a string
-                if (is_string($leftArray[$i_left]->$getterFunctionName()))
-                {
-                    if ($orderType == 'ascending')
-                    {
-                        if (strcasecmp($leftArray[$i_left]->$getterFunctionName(), $rightArray[$i_right]->$getterFunctionName()) < 0)
-                        {
+                if (is_string($leftArray[$i_left]->$getterFunctionName())) {
+                    if ($orderType == 'ascending') {
+                        if (strcasecmp($leftArray[$i_left]->$getterFunctionName(), $rightArray[$i_right]->$getterFunctionName()) < 0) {
                             $sortedArray[$i] = $leftArray[$i_left++];
-                        }
-                        else
-                        {
+                        } else {
                             $sortedArray[$i] = $rightArray[$i_right++];
                         }
-                    }
-                    else 
-                    {
+                    } else {
 
                         var_dump($attribute);
-                        if (strcasecmp($leftArray[$i_left]->$getterFunctionName(), $rightArray[$i_right]->$getterFunctionName()) > 0)
-                        {
+                        if (strcasecmp($leftArray[$i_left]->$getterFunctionName(), $rightArray[$i_right]->$getterFunctionName()) > 0) {
                             $sortedArray[$i] = $leftArray[$i_left++];
-                        }
-                        else
-                        {
+                        } else {
                             $sortedArray[$i] = $rightArray[$i_right++];
                         }
                     }
-                } 
+                }
                 //  If the value to compare is an integer
-                elseif (is_integer($leftArray[$i_left]->$getterFunctionName()))
-                {
-                    if ($orderType == 'ascending')
-                    {
-                        if ($leftArray[$i_left]->$getterFunctionName() <= $rightArray[$i_right]->$getterFunctionName())
-                        {
+                elseif (is_integer($leftArray[$i_left]->$getterFunctionName())) {
+                    if ($orderType == 'ascending') {
+                        if ($leftArray[$i_left]->$getterFunctionName() <= $rightArray[$i_right]->$getterFunctionName()) {
                             $sortedArray[$i] = $leftArray[$i_left++];
-                        }
-                        else
-                        {
+                        } else {
                             $sortedArray[$i] = $rightArray[$i_right++];
                         }
-                    }
-                    else 
-                    {
-                        if ($leftArray[$i_left]->$getterFunctionName() >= $rightArray[$i_right]->$getterFunctionName())
-                        {
+                    } else {
+                        if ($leftArray[$i_left]->$getterFunctionName() >= $rightArray[$i_right]->$getterFunctionName()) {
                             $sortedArray[$i] = $leftArray[$i_left++];
-                        }
-                        else
-                        {
+                        } else {
                             $sortedArray[$i] = $rightArray[$i_right++];
                         }
                     }
                 }
                 //  If the value to compare is a boolean
-                else
-                {
-                    if ($orderType == 'ascending')
-                    {
-                        if ($leftArray[$i_left]->$getterFunctionName())
-                        {
+                else {
+                    if ($orderType == 'ascending') {
+                        if ($leftArray[$i_left]->$getterFunctionName()) {
                             $sortedArray[$i] = $leftArray[$i_left++];
-                        }
-                        else
-                        {
+                        } else {
                             $sortedArray[$i] = $rightArray[$i_right++];
                         }
-                    }
-                    else 
-                    {
-                        if (!$leftArray[$i_left]->$getterFunctionName())
-                        {
+                    } else {
+                        if (!$leftArray[$i_left]->$getterFunctionName()) {
                             $sortedArray[$i] = $leftArray[$i_left++];
-                        }
-                        else
-                        {
+                        } else {
                             $sortedArray[$i] = $rightArray[$i_right++];
                         }
                     }
                 }
-                
-                
-                
             }
             //  Copy the rest of the array on the left (if there is anything left) */
             while ($i_left < $leftArraySize)
-            $sortedArray[$i++] = $leftArray[$i_left++];
+                $sortedArray[$i++] = $leftArray[$i_left++];
             //  Same for the right array */
             while ($i_right < $rightArraySize)
-            $sortedArray[$i++] = $rightArray[$i_right++];
+                $sortedArray[$i++] = $rightArray[$i_right++];
 
             //  Once the merge and sorting are done, the function returns the $sortedArray, which contains the merged and sorted objects.
             return $sortedArray;
@@ -227,7 +195,7 @@ class BookManagement {
         //  arrayCopy function
 
         //  Copy a part of an Array
-        
+
         //  $array: The original array from which a portion will be copied.
         //  $beginning: The starting index from which the copy begins.
         //  $end: The ending index where the copy stops.
@@ -262,36 +230,117 @@ class BookManagement {
             //  Merges the sorted left and right parts using the merge function to combine them into a single sorted array.
             //  Recursion: This function uses a divide-and-conquer strategy, breaking the array into smaller parts until it reaches individual elements,
             //  then merges and sorts them back together.
-            if ($size <= 1)
-            {
+            if ($size <= 1) {
                 return $array;
-            }
-            else 
-            {
+            } else {
                 $center = (int)($size / 2);
-                $leftPart = arrayCopy($array, 0, $center-1);
-                $rightPart = arrayCopy($array, $center, $size-1);
+                $leftPart = arrayCopy($array, 0, $center - 1);
+                $rightPart = arrayCopy($array, $center, $size - 1);
                 return merge(sortByMerge($leftPart, $orderType, $attribute), sortByMerge($rightPart, $orderType, $attribute), $orderType, $attribute);
             }
         }
 
         return sortByMerge($this->bookList, $orderType, $attribute);
     }
+
+    // Tri rapide (requis pour la recherche par livre)
+    public function quickSort($array, $left, $right, $attribute): array
+    {
+        // Vérification des limites de la zone à trier
+        if ($left < $right) {
+            // Separation autour d'un pivot pour diviser le tableau
+            $pivot = $this->separation($array, $left, $right, $attribute);
+
+            // Tri récursif des sous-tableaux
+            $this->quickSort($array, $left, $pivot - 1, $attribute);
+            $this->quickSort($array, $pivot + 1, $right, $attribute);
+        }
+
+        return $array;
+    }
+
+    // Separation pour le tri rapide
+    private function separation(&$array, $left, $right, $attribute): int
+    {
+        // Sélection du pivot comme élément le plus à droite dans le tableau, on se servira du du left comme point de départ et du pivot comme point de fin
+        $pivot = $array[$right];
+        $index = $left - 1;
+
+        $getterFunctionName = 'get' . $attribute;
+
+        // Parcours du tableau pour placer les éléments inférieurs au pivot à gauche et inversement
+        for ($forIndex = $left; $forIndex < $right; $forIndex++) {
+            if ($array[$forIndex]->$getterFunctionName() < $pivot->$getterFunctionName()) {
+                $index++;
+                $this->swap($array, $index, $forIndex);
+            }
+        }
+
+        // Placement du pivot à sa position finale et retour de son indice (ré utilisé pour le quick sort récursif)
+        $this->swap($array, $index + 1, $right);
+        return $index + 1;
+    }
+
+    // Ici on utilise &$array pour utiliser la réference du tableau et modifier celui-ci directement
+    private function swap(&$array, $index1, $index2): void
+    {
+        $temp = $array[$index1];
+        $array[$index1] = $array[$index2];
+        $array[$index2] = $temp;
+    }
+
+    public function quickSortBookList($attribute): array
+    {
+        // Tri rapide de la liste de livres selon l'attribut indiqué
+        return $this->quickSort($this->bookList, 0, count($this->bookList) - 1, $attribute);
+    }
+
+    public function searchBookByColumn($column, $value)
+    {
+        $sortedBookList = $this->quickSortBookList($column);
+
+        $left = 0;
+        $right = count($sortedBookList) - 1;
+
+        // Recherche binaire dans la liste triée
+        while ($left <= $right) {
+            $center = (int)(($left + $right) / 2); // Calcul du milieu du tableau
+            $getterFunctionName = 'get' . ucfirst($column);
+
+            $compareValue = $sortedBookList[$center]->$getterFunctionName();
+
+            // Livre trouvé
+            if ($compareValue == $value) {
+                return $sortedBookList[$center];
+            }
+
+            // Recherche à droite du milieu
+            if ($compareValue < $value) {
+                $left = $center + 1;
+
+            // Recherche à gauche du milieu
+            } else {
+                $right = $center - 1;
+            }
+        }
+
+        return "Aucun livre ne correspond à votre recherche";
+    }
 }
 
 $bookManager = new BookManagement();
 
-echo('<pre>');
+echo ('<pre>');
 
 $bookManager->addBook('abc', 'description1', false);
 $bookManager->addBook('bcd', 'description2', true);
-$bookManager->addBook('d', 'description2', false);
-$bookManager->addBook('z', 'description2', true);
-$bookManager->addBook('d', 'description2', false);
-$bookManager->addBook('gf', 'description2', true);
-$bookManager->addBook('xcv', 'description2', false);
+$bookManager->addBook('d', 'description3', false);
+$bookManager->addBook('z', 'description4', true);
+$bookManager->addBook('d', 'description5', false);
+$bookManager->addBook('gf', 'description6', true);
+$bookManager->addBook('xcv', 'description7', false);
 
 
 $bookManager->getBookBy('title', 'titre1');
 
-var_dump($bookManager->sortBookByAttributeAndOrderType('Available', 'descending'));
+var_dump($result = $bookManager->searchBookByColumn('title', 'abc'));
