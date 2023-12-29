@@ -69,20 +69,20 @@ class Book
 class BookManagement {
     protected $bookList = [];
 
-    // Ajoute un livre
+    // Add a book
     public function addBook(string $title, string $description, bool $available) : void
     {
         $newBook = new Book($title, $description, $available);
         array_push($this->bookList, $newBook);
     }
 
-    //  Récupère la liste des livres
+    //  Get the book list
     public function getBookList()
     {
         return $this->bookList;
     }
 
-    //  Affiche la liste de livre passé en paramêtre
+    //  Display the book list give in parameter of the function
     public function displayList($bookList)
     {
         foreach ($bookList as $book) {
@@ -90,13 +90,13 @@ class BookManagement {
         }
     }
 
-    // Affiche la liste de tous les livres
+    // Display the list book of all
     public function displayAll()
     {
         $this->displayList($this->bookList);
     }
 
-    //  Permet de récupérer un livre en fonction de la valeur d'un de ces attributs
+    //  Allows you to retrieve a book based on the value of one of these attributes
     public function getBookBy($column, $value)
     {
         $functionName = 'get'.ucfirst($column);
@@ -107,7 +107,7 @@ class BookManagement {
         }
     }
 
-    // Tri la liste de livre par attribut et ordre (croissant/decroissant) en utilisant la methode de tri par fusion
+    // Sort the book list by attribute and order (ascending/descending) using the merge sort method
     public function sortBookByAttributeAndOrderType($attribute, $orderType)
     {
         //  merge function
