@@ -113,13 +113,13 @@ $bookManager = new BookManagement();
 
 echo('<pre>');
 
-$bookManager->addBook('abc', 'description1', true);
+$bookManager->addBook('abc', 'description1', false);
 $bookManager->addBook('bcd', 'description2', true);
-$bookManager->addBook('d', 'description2', true);
+$bookManager->addBook('d', 'description2', false);
 $bookManager->addBook('z', 'description2', true);
-$bookManager->addBook('d', 'description2', true);
+$bookManager->addBook('d', 'description2', false);
 $bookManager->addBook('gf', 'description2', true);
-$bookManager->addBook('xcv', 'description2', true);
+$bookManager->addBook('xcv', 'description2', false);
 
 // var_dump($bookManager->displayAll());
 
@@ -174,9 +174,9 @@ function merge($leftArray, $rightArray, $orderType, $attribute)
                     $sortedArray[$i] = $rightArray[$i_right++];
                 }
             }
-        }
+        } 
         //  If the value to compare is an integer
-        else 
+        elseif (is_integer($leftArray[$i_left]->$getterFunctionName()))
         {
             if ($orderType == 'ascending')
             {
@@ -201,25 +201,45 @@ function merge($leftArray, $rightArray, $orderType, $attribute)
                 }
             }
         }
-
-        /*
-         * TODO
-         * 
-         *  Sorting must be implemented based on the boolean data type. For $available property of Book object
-         * 
-         *
-         */
-         
+        //  If the value to compare is a boolean
+        else
+        {
+            if ($orderType == 'ascending')
+            {
+                if ($leftArray[$i_left]->$getterFunctionName())
+                {
+                    $sortedArray[$i] = $leftArray[$i_left++];
+                }
+                else
+                {
+                    $sortedArray[$i] = $rightArray[$i_right++];
+                }
+            }
+            else 
+            {
+                if (!$leftArray[$i_left]->$getterFunctionName())
+                {
+                    $sortedArray[$i] = $leftArray[$i_left++];
+                }
+                else
+                {
+                    $sortedArray[$i] = $rightArray[$i_right++];
+                }
+            }
+        }
+        
+        
+        
     }
     //  Copy the rest of the array on the left (if there is anything left) */
     while ($i_left < $leftArraySize)
-        $sortedArray[$i++] = $leftArray[$i_left++];
+    $sortedArray[$i++] = $leftArray[$i_left++];
     //  Same for the right array */
     while ($i_right < $rightArraySize)
-        $sortedArray[$i++] = $rightArray[$i_right++];
-    
-    //  Once the merge and sorting are done, the function returns the $sortedArray, which contains the merged and sorted objects.
-    return $sortedArray;
+    $sortedArray[$i++] = $rightArray[$i_right++];
+
+//  Once the merge and sorting are done, the function returns the $sortedArray, which contains the merged and sorted objects.
+return $sortedArray;
 }
 
 //  arrayCopy function
@@ -279,4 +299,4 @@ function sortByMerge($array, $orderType, $attribute)
 
 // var_dump(strcmp('b', 'a'));
 
-var_dump(sortByMerge($bookManager->getBookList(), 'ascending', 'Title'));
+var_dump(sortByMerge($bookManager->getBookList(), 'descending', 'Available'));
