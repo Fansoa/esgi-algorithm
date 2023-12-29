@@ -69,17 +69,20 @@ class Book
 class BookManagement {
     protected $bookList = [];
 
+    // Ajoute un livre
     public function addBook(string $title, string $description, bool $available) : void
     {
         $newBook = new Book($title, $description, $available);
         array_push($this->bookList, $newBook);
     }
 
+    //  Récupère la liste des livres
     public function getBookList()
     {
         return $this->bookList;
     }
 
+    //  Affiche la liste de livre passé en paramêtre
     public function displayList($bookList)
     {
         foreach ($bookList as $book) {
@@ -87,6 +90,7 @@ class BookManagement {
         }
     }
 
+    // Affiche la liste de tous les livres
     public function displayAll()
     {
         $this->displayList($this->bookList);
@@ -103,9 +107,175 @@ class BookManagement {
         }
     }
 
+    // Tri la liste de livre par attribut et ordre (croissant/decroissant) en utilisant la methode de tri par fusion
     public function sortBookByAttributeAndOrderType($attribute, $orderType)
     {
+        //  merge function
+        
+        //  $leftArray: First array of objects to merge.
+        //  $rightArray: Second array of objects to merge.
+        //  $orderType: Type of sorting ('ascending' for ascending order, anything else for descending order).
+        //  $attribute: Attribute used to compare the objects.
 
+        function merge($leftArray, $rightArray, $orderType, $attribute)
+        {
+            $leftArraySize = count($leftArray);
+            $rightArraySize = count($rightArray);
+            $sortedArray = array();
+            $i_left = 0; $i_right = 0;
+
+            //  Retrieve the attribute and add the 'get' prefix to it in order to be able to retrieve the value of a given attribute of the object
+            $getterFunctionName = 'get'.$attribute;
+
+            for ($i = 0; $i_left < $leftArraySize && $i_right < $rightArraySize; ++$i)
+            {
+                //  If the value to compare is a string
+                if (is_string($leftArray[$i_left]->$getterFunctionName()))
+                {
+                    if ($orderType == 'ascending')
+                    {
+                        if (strcasecmp($leftArray[$i_left]->$getterFunctionName(), $rightArray[$i_right]->$getterFunctionName()) < 0)
+                        {
+                            $sortedArray[$i] = $leftArray[$i_left++];
+                        }
+                        else
+                        {
+                            $sortedArray[$i] = $rightArray[$i_right++];
+                        }
+                    }
+                    else 
+                    {
+
+                        var_dump($attribute);
+                        if (strcasecmp($leftArray[$i_left]->$getterFunctionName(), $rightArray[$i_right]->$getterFunctionName()) > 0)
+                        {
+                            $sortedArray[$i] = $leftArray[$i_left++];
+                        }
+                        else
+                        {
+                            $sortedArray[$i] = $rightArray[$i_right++];
+                        }
+                    }
+                } 
+                //  If the value to compare is an integer
+                elseif (is_integer($leftArray[$i_left]->$getterFunctionName()))
+                {
+                    if ($orderType == 'ascending')
+                    {
+                        if ($leftArray[$i_left]->$getterFunctionName() <= $rightArray[$i_right]->$getterFunctionName())
+                        {
+                            $sortedArray[$i] = $leftArray[$i_left++];
+                        }
+                        else
+                        {
+                            $sortedArray[$i] = $rightArray[$i_right++];
+                        }
+                    }
+                    else 
+                    {
+                        if ($leftArray[$i_left]->$getterFunctionName() >= $rightArray[$i_right]->$getterFunctionName())
+                        {
+                            $sortedArray[$i] = $leftArray[$i_left++];
+                        }
+                        else
+                        {
+                            $sortedArray[$i] = $rightArray[$i_right++];
+                        }
+                    }
+                }
+                //  If the value to compare is a boolean
+                else
+                {
+                    if ($orderType == 'ascending')
+                    {
+                        if ($leftArray[$i_left]->$getterFunctionName())
+                        {
+                            $sortedArray[$i] = $leftArray[$i_left++];
+                        }
+                        else
+                        {
+                            $sortedArray[$i] = $rightArray[$i_right++];
+                        }
+                    }
+                    else 
+                    {
+                        if (!$leftArray[$i_left]->$getterFunctionName())
+                        {
+                            $sortedArray[$i] = $leftArray[$i_left++];
+                        }
+                        else
+                        {
+                            $sortedArray[$i] = $rightArray[$i_right++];
+                        }
+                    }
+                }
+                
+                
+                
+            }
+            //  Copy the rest of the array on the left (if there is anything left) */
+            while ($i_left < $leftArraySize)
+            $sortedArray[$i++] = $leftArray[$i_left++];
+            //  Same for the right array */
+            while ($i_right < $rightArraySize)
+            $sortedArray[$i++] = $rightArray[$i_right++];
+
+            //  Once the merge and sorting are done, the function returns the $sortedArray, which contains the merged and sorted objects.
+            return $sortedArray;
+        }
+
+        //  arrayCopy function
+
+        //  Copy a part of an Array
+        
+        //  $array: The original array from which a portion will be copied.
+        //  $beginning: The starting index from which the copy begins.
+        //  $end: The ending index where the copy stops.
+
+        function arrayCopy($array, $beginning, $end)
+        {
+            $copiedArray = array();
+
+            //  The for loop iterates through the original array from the $beginning index to the $end index (inclusive). 
+            //  It copies each element of the original array into the $copiedArray using the adjusted index $i - $beginning. 
+            //  This adjustment allows the copied array to start from index 0.
+            for ($i = $beginning; $i <= $end; ++$i)
+                $copiedArray[$i - $beginning] = $array[$i];
+            return $copiedArray;
+        }
+
+        //  sortByMerge function
+
+        //  Implements a sorting algorithm known as merge sort. Here's a breakdown of its functionality
+
+        //  $array: The array to be sorted.
+        //  $orderType: The type of sorting ('ascending' for ascending order, anything else for descending order).
+        //  $attribute: The attribute based on which the sorting will be performed.
+        function sortByMerge($array, $orderType, $attribute)
+        {
+            $size = count($array);
+
+            // If the size of the array is greater than 1, it proceeds with the merge sort algorithm:
+            //  It calculates the center of the array.
+            //  Splits the array into two parts, leftPart and rightPart, using the arrayCopy function (presumably copying the left and right halves of the array).
+            //  Recursively calls sortByMerge on the left and right parts to sort them.
+            //  Merges the sorted left and right parts using the merge function to combine them into a single sorted array.
+            //  Recursion: This function uses a divide-and-conquer strategy, breaking the array into smaller parts until it reaches individual elements,
+            //  then merges and sorts them back together.
+            if ($size <= 1)
+            {
+                return $array;
+            }
+            else 
+            {
+                $center = (int)($size / 2);
+                $leftPart = arrayCopy($array, 0, $center-1);
+                $rightPart = arrayCopy($array, $center, $size-1);
+                return merge(sortByMerge($leftPart, $orderType, $attribute), sortByMerge($rightPart, $orderType, $attribute), $orderType, $attribute);
+            }
+        }
+
+        return sortByMerge($this->bookList, $orderType, $attribute);
     }
 }
 
@@ -121,182 +291,7 @@ $bookManager->addBook('d', 'description2', false);
 $bookManager->addBook('gf', 'description2', true);
 $bookManager->addBook('xcv', 'description2', false);
 
-// var_dump($bookManager->displayAll());
 
 $bookManager->getBookBy('title', 'titre1');
 
-//
-//
-//
-
-
-//  merge function
- 
-//  $leftArray: First array of objects to merge.
-//  $rightArray: Second array of objects to merge.
-//  $orderType: Type of sorting ('ascending' for ascending order, anything else for descending order).
-//  $attribute: Attribute used to compare the objects.
-
-function merge($leftArray, $rightArray, $orderType, $attribute)
-{
-    $leftArraySize = count($leftArray);
-    $rightArraySize = count($rightArray);
-    $sortedArray = array();
-    $i_left = 0; $i_right = 0;
-
-    //  Retrieve the attribute and add the 'get' prefix to it in order to be able to retrieve the value of a given attribute of the object
-    $getterFunctionName = 'get'.$attribute;
-
-    for ($i = 0; $i_left < $leftArraySize && $i_right < $rightArraySize; ++$i)
-    {
-        //  If the value to compare is a string
-        if (is_string($leftArray[$i_left]->$getterFunctionName()))
-        {
-            if ($orderType == 'ascending')
-            {
-                if (strcasecmp($leftArray[$i_left]->$getterFunctionName(), $rightArray[$i_right]->$getterFunctionName()) < 0)
-                {
-                    $sortedArray[$i] = $leftArray[$i_left++];
-                }
-                else
-                {
-                    $sortedArray[$i] = $rightArray[$i_right++];
-                }
-            }
-            else 
-            {
-                if (strcasecmp($leftArray[$i_left]->$getterFunctionName(), $rightArray[$i_right]->$getterFunctionName()) > 0)
-                {
-                    $sortedArray[$i] = $leftArray[$i_left++];
-                }
-                else
-                {
-                    $sortedArray[$i] = $rightArray[$i_right++];
-                }
-            }
-        } 
-        //  If the value to compare is an integer
-        elseif (is_integer($leftArray[$i_left]->$getterFunctionName()))
-        {
-            if ($orderType == 'ascending')
-            {
-                if ($leftArray[$i_left]->$getterFunctionName() <= $rightArray[$i_right]->$getterFunctionName())
-                {
-                    $sortedArray[$i] = $leftArray[$i_left++];
-                }
-                else
-                {
-                    $sortedArray[$i] = $rightArray[$i_right++];
-                }
-            }
-            else 
-            {
-                if ($leftArray[$i_left]->$getterFunctionName() >= $rightArray[$i_right]->$getterFunctionName())
-                {
-                    $sortedArray[$i] = $leftArray[$i_left++];
-                }
-                else
-                {
-                    $sortedArray[$i] = $rightArray[$i_right++];
-                }
-            }
-        }
-        //  If the value to compare is a boolean
-        else
-        {
-            if ($orderType == 'ascending')
-            {
-                if ($leftArray[$i_left]->$getterFunctionName())
-                {
-                    $sortedArray[$i] = $leftArray[$i_left++];
-                }
-                else
-                {
-                    $sortedArray[$i] = $rightArray[$i_right++];
-                }
-            }
-            else 
-            {
-                if (!$leftArray[$i_left]->$getterFunctionName())
-                {
-                    $sortedArray[$i] = $leftArray[$i_left++];
-                }
-                else
-                {
-                    $sortedArray[$i] = $rightArray[$i_right++];
-                }
-            }
-        }
-        
-        
-        
-    }
-    //  Copy the rest of the array on the left (if there is anything left) */
-    while ($i_left < $leftArraySize)
-    $sortedArray[$i++] = $leftArray[$i_left++];
-    //  Same for the right array */
-    while ($i_right < $rightArraySize)
-    $sortedArray[$i++] = $rightArray[$i_right++];
-
-//  Once the merge and sorting are done, the function returns the $sortedArray, which contains the merged and sorted objects.
-return $sortedArray;
-}
-
-//  arrayCopy function
-
-//  Copy a part of an Array
- 
-//  $array: The original array from which a portion will be copied.
-//  $beginning: The starting index from which the copy begins.
-//  $end: The ending index where the copy stops.
-
-function arrayCopy($array, $beginning, $end)
-{
-   $copiedArray = array();
-
-//  The for loop iterates through the original array from the $beginning index to the $end index (inclusive). 
-//  It copies each element of the original array into the $copiedArray using the adjusted index $i - $beginning. 
-//  This adjustment allows the copied array to start from index 0.
-   for ($i = $beginning; $i <= $end; ++$i)
-      $copiedArray[$i - $beginning] = $array[$i];
-   return $copiedArray;
-}
-
-//  sortByMerge function
-
-//  Implements a sorting algorithm known as merge sort. Here's a breakdown of its functionality
-
-//  $array: The array to be sorted.
-//  $orderType: The type of sorting ('ascending' for ascending order, anything else for descending order).
-//  $attribute: The attribute based on which the sorting will be performed.
-function sortByMerge($array, $orderType, $attribute)
-{
-    $size = count($array);
-
-    // If the size of the array is greater than 1, it proceeds with the merge sort algorithm:
-    //  It calculates the center of the array.
-    //  Splits the array into two parts, leftPart and rightPart, using the arrayCopy function (presumably copying the left and right halves of the array).
-    //  Recursively calls sortByMerge on the left and right parts to sort them.
-    //  Merges the sorted left and right parts using the merge function to combine them into a single sorted array.
-    //  Recursion: This function uses a divide-and-conquer strategy, breaking the array into smaller parts until it reaches individual elements,
-    //  then merges and sorts them back together.
-    if ($size <= 1)
-    {
-        return $array;
-    }
-    else 
-    {
-        $center = (int)($size / 2);
-        $leftPart = arrayCopy($array, 0, $center-1);
-        $rightPart = arrayCopy($array, $center, $size-1);
-        return merge(sortByMerge($leftPart, $orderType, $attribute), sortByMerge($rightPart, $orderType, $attribute), $orderType, $attribute);
-    }
-}
-
-
-// $array = array('F', 'q', 'f', 'a', 'a', 'y', 'u');
-// print_r(sortByMerge($array, 'descending'));
-
-// var_dump(strcmp('b', 'a'));
-
-var_dump(sortByMerge($bookManager->getBookList(), 'descending', 'Available'));
+var_dump($bookManager->sortBookByAttributeAndOrderType('Available', 'descending'));
